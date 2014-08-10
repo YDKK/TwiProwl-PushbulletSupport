@@ -1,6 +1,6 @@
 # Instruction 
 
-Version : 2.2
+Version : 2.2 with Pushbullet support by YDKK
 
 1. install some ruby libraries
 
@@ -50,6 +50,9 @@ Prowl:
 NMA:
  APIKey: xxxxxxxxxxxxxxxx  # the NMA's API Key
 
+Pushbullet:
+ AccessToken: xxxxxxxxxxx  # the Pushbullet's AccessToken
+
 Growl:
  Sticky: 0                 # lowest priority to use sticky option.
 
@@ -59,6 +62,7 @@ Accounts:
   NotifyMethods:           # notify methods you want to use.
    - prowl
    - nma
+   - pushbullet
    - growl
   User: <Twitter username>
   UseProxy: false          # <= use Prowl::ProxyURL

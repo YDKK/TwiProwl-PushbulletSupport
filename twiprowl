@@ -8,6 +8,9 @@
 #
 # You can redistribute it and/or modify it under the same term as Ruby.
 #
+#
+# Pushbullet support by YDKK.
+#
 STDOUT.sync = STDERR.sync = true
 
 require 'optparse'
@@ -38,6 +41,7 @@ class TwiProwl
 
   PROWL_API_ADD = "https://prowl.weks.net/publicapi/add"
   NMA_API_NOTIFY = "https://www.notifymyandroid.com/publicapi/notify"
+  Pushbullet_API_PUSH = "https://api.pushbullet.com/v2/pushes"
 
   FOLLOWERS  = "#{API_BASE}followers/ids.json?screen_name=%s&cursor=%d"
   USERS_LOOKUP = "#{API_BASE}users/lookup.json?user_id=%s"
@@ -357,6 +361,31 @@ class TwiProwl
     rescue
       error "Error while Prowling: #{$!}"
     end
+  end
+
+  def pushbullet( icon, params = {}, user = nil )
+    params[:type] = "note"
+    begin
+      info "Notify with Pushbullet..."
+      uri = URI::parse( Pushbullet_API_PUSH )
+      http = http_new( uri  )
+      request = Net::HTTP::Post.new( uri.request_uri )
+      request.basic_auth(@@conf['Pushbullet']['AccessToken'], nil)
+      request.content_type = "application/x-www-form-urlencoded"
+      query = params.map do |key, val|
+        case "#{key}"
+        when "event" then
+          key = "title"
+        when "description" then
+          key = "body"
+        end
+        "#{key}=#{post_escape(val.to_s)}"
+      end
+      res = http.request( request, query.join( '&' ) )
+      debug "Pushbullet Response: #{res.code}"
+    rescue
+      error "Error while Prowling: #{$!}"
+    end    
   end
 
   def get_json( url, auth = true )
